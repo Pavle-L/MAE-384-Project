@@ -1,0 +1,83 @@
+% This Part depends on part1.mlx, to be able to run this code you must copy and paste it AFTER part 1's code
+
+n = (T-T0)/h;
+daysInter = 1:h:T;
+susepInter = zeros(1,size(days,2)); 
+infectInter = zeros(1,size(days,2));
+recoverInter = zeros(1,size(days,2));
+
+for i=1:n-1  % Linear Interpolation
+    susepInter(i) = ((daysInter(1,i) - influenza(1,i+1))/(influenza(1,i) - influenza(1,i+1)))*influenza(2,i) + ((daysInter(1,i) - influenza(1,i))/(influenza(1,i+1) - influenza(1,i)))*influenza(2,i+1);
+    infectInter(i) = ((daysInter(1,i) - influenza(1,i+1))/(influenza(1,i) - influenza(1,i+1)))*influenza(3,i) + ((daysInter(1,i) - influenza(1,i))/(influenza(1,i+1) - influenza(1,i)))*influenza(3,i+1);
+    recoverInter(i) = ((daysInter(1,i) - influenza(1,i+1))/(influenza(1,i) - influenza(1,i+1)))*influenza(4,i) + ((daysInter(1,i) - influenza(1,i))/(influenza(1,i+1) - influenza(1,i)))*influenza(4,i+1);
+end
+
+plot(daysInter(1,1:49), susepInter, 'r')
+hold on
+plot(daysInter(1,1:49), infectInter, 'g')
+plot(daysInter(1,1:49), recoverInter, 'b')
+title("Linearly interpolated values plot")
+hold off
+EL2susepLinear = sqrt(sum((influenza(2,1:49)-susepInter).^2)./n)  % Error for susceptible (flu)
+EL2infectLinear = sqrt(sum((influenza(3,1:49)-infectInter).^2)./n)  % Error for infected (flu)
+EL2recoverLinear = sqrt(sum((influenza(4,1:49)-recoverInter).^2)./n)  % Error for susceptible (flu)
+
+susepInterQuad = zeros(1,size(days,2)); 
+infectInterQuad = zeros(1,size(days,2));
+recoverInterQuad = zeros(1,size(days,2));
+
+
+for i=1:n-1  % Quadratic Interpolation for susceptible (flu)
+    x = daysInter(1,i);
+    x0 = influenza(1,i);
+    x1 = influenza(1,i+1);
+    x2 = influenza(1,i+2);
+    f0 = influenza(2,i);
+    f1 = influenza(2,i+1);
+    f2 = influenza(2,i+2);
+
+    b0 = (((x-x1)*(x-x2))/((x0-x1)*(x0-x2)))*f0;
+    b1 = (((x-x0)*(x-x2))/((x1-x0)*(x1-x2)))*f1;
+    b2 = (((x-x0)*(x-x1))/((x2-x0)*(x2-x1)))*f2;
+    susepInterQuad(i) = b0 + b1 + b2;
+end
+for i=1:n-1  % Quadratic Interpolation for infection (flu)
+    x = daysInter(1,i);
+    x0 = influenza(1,i);
+    x1 = influenza(1,i+1);
+    x2 = influenza(1,i+2);
+    f0 = influenza(3,i);
+    f1 = influenza(3,i+1);
+    f2 = influenza(3,i+2);
+
+    b0 = (((x-x1)*(x-x2))/((x0-x1)*(x0-x2)))*f0;
+    b1 = (((x-x0)*(x-x2))/((x1-x0)*(x1-x2)))*f1;
+    b2 = (((x-x0)*(x-x1))/((x2-x0)*(x2-x1)))*f2;
+    infectInterQuad(i) = b0 + b1 + b2;
+end
+
+for i=1:n-1  % Quadratic Interpolation for recovered (flu)
+    x = daysInter(1,i);
+    x0 = influenza(1,i);
+    x1 = influenza(1,i+1);
+    x2 = influenza(1,i+2);
+    f0 = influenza(4,i);
+    f1 = influenza(4,i+1);
+    f2 = influenza(4,i+2);
+
+    b0 = (((x-x1)*(x-x2))/((x0-x1)*(x0-x2)))*f0;
+    b1 = (((x-x0)*(x-x2))/((x1-x0)*(x1-x2)))*f1;
+    b2 = (((x-x0)*(x-x1))/((x2-x0)*(x2-x1)))*f2;
+    recoverInterQuad(i) = b0 + b1 + b2;
+end
+
+plot(daysInter(1,1:49), susepInterQuad, 'r')
+hold on
+plot(daysInter(1,1:49), infectInterQuad, 'g')
+plot(daysInter(1,1:49), recoverInterQuad, 'b')
+title("Quadratically interpolated values plot")
+hold off
+EL2susepQuad = sqrt(sum((influenza(2,1:49)-susepInterQuad).^2)./n)  % Error for susceptible (flu)
+EL2infectQuad = sqrt(sum((influenza(3,1:49)-infectInterQuad).^2)./n)  % Error for infected (flu)
+EL2recoverQuad = sqrt(sum((influenza(4,1:49)-recoverInterQuad).^2)./n)  % Error for susceptible (flu)
+EL2 = [EL2susepLinear EL2infectLinear EL2recoverLinear; EL2susepQuad EL2infectQuad EL2recoverQuad]
