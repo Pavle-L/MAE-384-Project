@@ -12,7 +12,7 @@ function SIRmatrix = modelSIR_P4(S0, I0, R0, T0, T, h, b0, A, omega, gamma)
     susepList(1) = S0;
     infectList(1) = I0;
     recoverList(1) = R0;
-    B(1) = b0*(1+A*sin(omega));
+    B(1) = b0*(1+A*sin(omega*days(1)));
     %Models with respect to time
     dSdt = @(S,I,beta) -beta/N * S * I;
     dIdt = @(S,I,beta) beta/N * S * I - gamma * I;
@@ -40,7 +40,7 @@ function SIRmatrix = modelSIR_P4(S0, I0, R0, T0, T, h, b0, A, omega, gamma)
         susepList(i+1) = susepList(i) + 1/6 * (K(1,1) + 2*K(1,2) + 2*K(1,3) + K(1,4))*h;
         infectList(i+1) = infectList(i) + 1/6 * (K(2,1) + 2*K(2,2) + 2*K(2,3) + K(2,4))*h;
         recoverList(i+1) = recoverList(i) + 1/6 * (K(3,1) + 2*K(3,2) + 2*K(3,3) + K(3,4))*h;
-        B(i+1) = b0*(1+A*sin(omega*i));
+        B(i+1) = b0*(1+A*sin(omega*days(i+1)));
     end
 
     %Returns a 4 row matrix.
