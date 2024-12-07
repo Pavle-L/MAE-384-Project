@@ -21,7 +21,7 @@ function LSRoutput = SIR_LSR(trueInfect,N,S0,gamma,dayNum)
     else
         %excludes day 0 and any day not divisible by spacing. Last day used
         days = trueInfect(1, 1+spacing:spacing:dayNum+1); 
-        infectList = trueInfect(2,1+spacing:spacing:dayNum+1);
+        infectList = log(trueInfect(2,1+spacing:spacing:dayNum+1));
     end
 
     
@@ -39,8 +39,8 @@ function LSRoutput = SIR_LSR(trueInfect,N,S0,gamma,dayNum)
     a0 = infectSum / m - a1 * daySum / m;
     
     I0 = exp(a0);
-    %k = (beta * S0 /N - gamma) -> beta = (k + gamma) * N/S0; k = a0
-    beta = (a0 + gamma) * N/S0;
+    %k = (beta * S0 /N - gamma) -> beta = (k + gamma) * N/S0; k = a1
+    beta = (a1 + gamma) * N/S0;
 
     LSRoutput = [I0,beta];
 
